@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: e7be9f10fd7014b69af8f5b425c4396d
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Party Kids
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 01e5043fe14364446b8df5be3bc8f9ba, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
