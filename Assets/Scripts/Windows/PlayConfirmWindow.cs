@@ -1,10 +1,10 @@
 using System;
 using Services;
-using Support;
 using Support.GraphicsGroup;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using R3;
+using Support;
 
 namespace Windows
 {
@@ -27,6 +27,8 @@ namespace Windows
         [SerializeField] private Button _playButton;
         [SerializeField] private Button _quitButton;
 
+        [SerializeField] private Button _button;
+        
         [SerializeField] private GraphicsSwitchGroup _playGroup;
         [SerializeField] private GraphicsSwitchGroup _quitGroup;
 
@@ -42,12 +44,12 @@ namespace Windows
                     ActiveModel.OnClick?.Invoke();
                     ActiveModel.WindowsService.Close();
                 })
-                .AddTo(Disposables);
+                .AddTo(ref Disposables);
 
             _quitButton
                 .OnClickAsObservable()
                 .SafeSubscribe(_ => ActiveModel.WindowsService.Close())
-                .AddTo(Disposables);
+                .AddTo(ref Disposables);
         }
     }
 }

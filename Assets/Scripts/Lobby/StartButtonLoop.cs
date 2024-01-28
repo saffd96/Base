@@ -1,7 +1,7 @@
 using Core;
 using DG.Tweening;
 using Support;
-using UniRx;
+using R3;
 using UnityEngine;
 
 namespace Lobby
@@ -29,7 +29,7 @@ namespace Lobby
                 .SetLoops(-1, LoopType.Yoyo)
                 .PlayAsObservable()
                 .EmptySubscribe()
-                .AddTo(Disposables);
+                .AddTo(ref Disposables);
         }
     }
 }

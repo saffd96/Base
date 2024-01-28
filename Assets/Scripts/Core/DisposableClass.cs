@@ -1,15 +1,15 @@
 using System;
-using UniRx;
+using R3;
 
 namespace Core
 {
     public class DisposableClass
     {
-        protected CompositeDisposable Disposables;
+        protected DisposableBag Disposables;
 
         public IDisposable Init()
         {
-            Disposables = new CompositeDisposable();
+            Disposables = new DisposableBag();
 
             OnInit();
 

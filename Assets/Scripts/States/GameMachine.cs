@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Core;
-using UniRx;
+using R3;
 
 namespace States
 {
@@ -16,7 +16,7 @@ namespace States
 
             Disposable
                 .Create(OnDisposed)
-                .AddTo(Disposables);
+                .AddTo(ref Disposables);
         }
 
         public void AddState(IGameState state)

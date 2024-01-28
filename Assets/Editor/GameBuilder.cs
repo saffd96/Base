@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using R3;
 using Support;
-using UniRx;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using Debug = UnityEngine.Debug;
@@ -12,7 +12,7 @@ namespace Editor
 {
     public class GameBuilder
     {
-        private static readonly CompositeDisposable BuildDisposable = new();
+        private static DisposableBag BuildDisposable = new();
         private static Dictionary<string, string> _commandLineArguments = new();
 
         [MenuItem("Build/Build Android")]
@@ -27,14 +27,14 @@ namespace Editor
             var scenes = scenesArgument.Split(',');
 
             ExecuteShell()
-                .ContinueWith(BuildApk(buildPlayerOptions, scenes))
+                .Concat(BuildApk(buildPlayerOptions, scenes))
                 .EmptySubscribe()
-                .AddTo(BuildDisposable);
+                .AddTo(ref BuildDisposable);
 
             BuildDisposable.Clear();
         }
 
-        private static IObservable<Unit> BuildApk(BuildPlayerOptions buildPlayerOptions, string[] args)
+        private static Observable<Unit> BuildApk(BuildPlayerOptions buildPlayerOptions, string[] args)
         {
             buildPlayerOptions.scenes = args;
 
@@ -51,7 +51,7 @@ namespace Editor
             return Observable.ReturnUnit();
         }
 
-        private static IObservable<Unit> ExecuteShell()
+        private static Observable<Unit> ExecuteShell()
         {
             var projectFolderPath = Directory.GetCurrentDirectory();
             var bashFilePath = $"{projectFolderPath}/build_android.sh";

@@ -1,7 +1,7 @@
 using Core;
 using Lobby;
+using R3;
 using Support;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,15 +19,15 @@ namespace States
 
             var playConfirmWindow =
                 ActiveModel.WindowResolver.GetPlayConfirmWindowModel(ActiveModel.OnGameAction, false);
-
+            
             _quitButton
                 .OnClickAsObservable()
                 .SafeSubscribe(_ => ActiveModel.WindowsService.Open(playConfirmWindow, false))
-                .AddTo(Disposables);
+                .AddTo(ref Disposables);
 
             new ScrollingBackground(_visualBackground, _uvMovingByX)
                 .Init()
-                .AddTo(Disposables);
+                .AddTo(ref Disposables);
         }
     }
 }

@@ -1,6 +1,6 @@
 using Core;
 using Support;
-using UniRx;
+using R3;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,7 +26,7 @@ namespace Lobby
             Observable
                 .EveryUpdate()
                 .SafeSubscribe(_ => MoveBackGround())
-                .AddTo(Disposables);
+                .AddTo(ref Disposables);
         }
 
         private void MoveBackGround()

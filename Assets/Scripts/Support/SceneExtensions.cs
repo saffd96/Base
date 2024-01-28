@@ -1,5 +1,5 @@
 using System;
-using UniRx;
+using R3;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
@@ -8,7 +8,7 @@ namespace Support
 {
     public static class SceneExtensions
     {
-        public static IObservable<Unit> LoadScene(string sceneName)
+        public static Observable<Unit> LoadScene(string sceneName)
         {
             return Observable.Create<Unit>(subject =>
             {
@@ -38,7 +38,7 @@ namespace Support
             return Object.FindObjectOfType<T>();
         }
 
-        public static IObservable<Unit> ObservableSceneLoaded(string sceneName)
+        public static Observable<Unit> ObservableSceneLoaded(string sceneName)
         {
             return Observable.Create<Unit>(observer =>
             {

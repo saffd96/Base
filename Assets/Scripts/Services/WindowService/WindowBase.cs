@@ -1,6 +1,6 @@
 using System;
+using R3;
 using Support;
-using UniRx;
 using UnityEngine;
 
 namespace Services
@@ -12,7 +12,7 @@ namespace Services
         public sealed override Type ModelType => typeof(T);
         protected T ActiveModel { get; private set; }
 
-        protected readonly CompositeDisposable Disposables = new();
+        protected DisposableBag Disposables = new();
 
         public sealed override void Open(object model)
         {

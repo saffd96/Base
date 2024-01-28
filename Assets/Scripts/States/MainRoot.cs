@@ -1,7 +1,6 @@
-using System;
+using R3;
 using Services;
 using Support;
-using UniRx;
 using UnityEngine;
 
 namespace States
@@ -12,7 +11,7 @@ namespace States
 
         private GameMachine _gameMachine;
 
-        private readonly CompositeDisposable _rootDisposable = new();
+        private DisposableBag _rootDisposable = new();
 
         private void Awake()
         {
@@ -23,13 +22,13 @@ namespace States
         private void StartRoot()
         {
             Observable.ReturnUnit()
-                .ContinueWith(_ => InitServices())
-                .ContinueWith(_ => InitStates())
+                .Concat(InitServices())
+                .Concat(InitStates())
                 .SafeSubscribe(_ => LoadStage())
-                .AddTo(_rootDisposable);
+                .AddTo(ref _rootDisposable);
         }
 
-        private IObservable<Unit> InitStates()
+        private Observable<Unit> InitStates()
         {
             _gameMachine = new GameMachine();
 
@@ -37,7 +36,7 @@ namespace States
 
             _gameMachine
                 .Init()
-                .AddTo(_rootDisposable);
+                .AddTo(ref _rootDisposable);
 
             _gameMachine.AddState(new LobbyState(_gameMachine, _windowsService, windowResolver));
             _gameMachine.AddState(new GameState(_gameMachine, _windowsService, windowResolver));
@@ -45,9 +44,9 @@ namespace States
             return Observable.ReturnUnit();
         }
 
-        private IObservable<Unit> InitServices()
+        private Observable<Unit> InitServices()
         {
-            _windowsService.Init(new WindowsService.Model()).AddTo(_rootDisposable);
+            _windowsService.Init(new WindowsService.Model()).AddTo(ref _rootDisposable);
 
             return Observable.ReturnUnit();
         }

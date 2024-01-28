@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Core;
-using UniRx;
+using R3;
 using UnityEngine;
 
 namespace Services
@@ -19,32 +19,32 @@ namespace Services
         private readonly List<WindowBase> _instances = new();
         private readonly Stack<WindowBase> _windowsStack = new();
 
-        public IObservable<Unit> ObserveWindowOpen<T>() =>
+        public Observable<Unit> ObserveWindowOpen<T>() =>
             CurrentWindow.Where(window => window != null && window.GetType() == typeof(T))
                 .Select(_ => _)
-                .First()
+                .Take(1)
                 .AsUnitObservable();
 
-        public IObservable<Unit> ObserveWindowClose<T>() =>
+        public Observable<Unit> ObserveWindowClose<T>() =>
             CurrentWindow.Pairwise()
                 .Where(pair => pair.Previous != null && pair.Previous.GetType() == typeof(T))
                 .Select(_ => _)
-                .First()
+                .Take(1)
                 .AsUnitObservable();
 
-        public IObservable<Unit> ObserveWindowFullClose<T>()
+        public Observable<Unit> ObserveWindowFullClose<T>()
         {
             return _windowClosedObservable.Where(closingWindowType => closingWindowType == typeof(T))
-                .First()
+                .Take(1)
                 .AsUnitObservable();
         }
 
-        public IReadOnlyReactiveProperty<WindowBase> CurrentWindow => _currentWindow;
+        public ReadOnlyReactiveProperty<WindowBase> CurrentWindow => _currentWindow;
 
         private readonly ReactiveCommand<Type> _windowClosedObservable = new();
         private readonly ReactiveProperty<WindowBase> _currentWindow = new();
 
-        private readonly CompositeDisposable _loadingDisposable = new();
+        private DisposableBag _loadingDisposable = new();
 
         public static void Quit()
         {
@@ -96,7 +96,7 @@ namespace Services
 
         protected override void OnInit()
         {
-            Disposable.Create(OnDisposed).AddTo(Disposables);
+            Disposable.Create(OnDisposed).AddTo(ref Disposables);
         }
 
         private WindowBase GetOrCreateWindow(Type modelType)

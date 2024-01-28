@@ -1,7 +1,7 @@
 using System;
+using R3;
 using Services;
 using Support;
-using UniRx;
 
 namespace States
 {
@@ -10,7 +10,7 @@ namespace States
         private readonly GameMachine _gameMachine;
         private readonly WindowsService _windowsService;
         private readonly WindowResolver _windowResolver;
-        private readonly CompositeDisposable _rootDisposable = new();
+        private DisposableBag _rootDisposable = new();
 
         private const string StateSceneName = "Lobby";
 
@@ -25,13 +25,13 @@ namespace States
         {
             SceneExtensions.LoadScene(StateSceneName)
                 .SafeSubscribe(_ => OnSceneLoaded())
-                .AddTo(_rootDisposable);
+                .AddTo(ref _rootDisposable);
         }
 
         private void OnSceneLoaded()
         {
             InitControllers()
-                .AddTo(_rootDisposable);
+                .AddTo(ref _rootDisposable);
         }
 
         private IDisposable InitControllers()

@@ -1,17 +1,17 @@
 using System;
-using UniRx;
+using R3;
 using UnityEngine;
 
 namespace Core
 {
     public class DisposableBehaviour<T> : MonoBehaviour
     {
-        protected CompositeDisposable Disposables;
+        protected DisposableBag Disposables;
         protected T ActiveModel { get; private set; }
 
         public IDisposable Init(T model)
         {
-            Disposables = new CompositeDisposable();
+            Disposables = new DisposableBag();
 
             ActiveModel = model;
 
