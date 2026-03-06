@@ -3,7 +3,7 @@ using R3;
 using Support;
 using UnityEngine;
 
-namespace Services
+namespace Services.WindowService
 {
     public abstract class WindowBase<T> : WindowBase
     {
@@ -22,7 +22,7 @@ namespace Services
 
             OnOpen();
 
-            this.gameObject.SetActive(true);
+            gameObject.SetActive(true);
         }
 
         public sealed override void Close()

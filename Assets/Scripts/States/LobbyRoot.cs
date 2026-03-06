@@ -1,12 +1,11 @@
-
 using System;
 using Core;
 using Lobby;
 using R3;
-using Services;
 using Support;
 using UnityEngine;
 using UnityEngine.UI;
+using Services.WindowService;
 
 namespace States
 {
@@ -26,6 +25,7 @@ namespace States
             }
         }
 
+        [Header("Lobby Specific")]
         [SerializeField] private Button _playButton;
         [SerializeField] private Transform _playButtonTransform;
         [SerializeField] private RawImage _visualBackground;
@@ -37,20 +37,33 @@ namespace States
         {
             base.OnInit();
 
-            var playConfirmWindow = ActiveModel.WindowResolver.GetPlayConfirmWindowModel(ActiveModel.OnGameAction);
-            
-            _playButton
-                .OnClickAsObservable()
-                .SafeSubscribe(_ => ActiveModel.WindowsService.Open(playConfirmWindow, false))
-                .AddTo(ref Disposables);
+            // Background initialization
+            if (_visualBackground != null)
+            {
+                new ScrollingBackground(_visualBackground, _uvMovingByX)
+                    .Init()
+                    .AddTo(ref Disposables);
+            }
 
-            new ScrollingBackground(_visualBackground, _uvMovingByX)
-                .Init()
-                .AddTo(ref Disposables);
+            // Play button initialization
+            if (_playButton != null)
+            {
+                var playConfirmWindow = ActiveModel.WindowResolver.GetPlayConfirmWindowModel(
+                    ActiveModel.OnGameAction, true);
 
-            new StartButtonLoop(_playButtonTransform, _endValue, _duration)
-                .Init()
-                .AddTo(ref Disposables);
+                _playButton
+                    .OnClickAsObservable()
+                    .SafeSubscribe(_ => ActiveModel.WindowsService.Open(playConfirmWindow, false))
+                    .AddTo(ref Disposables);
+            }
+
+            // Play button animation
+            if (_playButtonTransform != null)
+            {
+                new StartButtonLoop(_playButtonTransform, _endValue, _duration)
+                    .Init()
+                    .AddTo(ref Disposables);
+            }
         }
     }
 }

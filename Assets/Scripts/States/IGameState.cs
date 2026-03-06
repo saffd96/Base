@@ -6,7 +6,7 @@ namespace States
         void Deinit();
     }
 
-    public abstract class GameStateBase<T> : IGameState where T : struct
+    public abstract class GameStateBase : IGameState
     {
         void IGameState.Init()
         {

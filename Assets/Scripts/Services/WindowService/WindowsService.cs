@@ -4,7 +4,7 @@ using Core;
 using R3;
 using UnityEngine;
 
-namespace Services
+namespace Services.WindowService
 {
     public class WindowsService : DisposableBehaviour<WindowsService.Model>
     {
@@ -44,7 +44,7 @@ namespace Services
         private readonly ReactiveCommand<Type> _windowClosedObservable = new();
         private readonly ReactiveProperty<WindowBase> _currentWindow = new();
 
-        private DisposableBag _loadingDisposable = new();
+        private DisposableBag _windowDisposable = new();
 
         public static void Quit()
         {
@@ -55,6 +55,37 @@ namespace Services
 #endif
         }
 
+        /// <summary>
+        /// Opens a window with a type-safe model.
+        /// </summary>
+        public void Open<T>(T model, bool isDisplacing = true)
+        {
+            if (isDisplacing)
+            {
+                while (_windowsStack.Count > 0)
+                {
+                    var closingWindow = _windowsStack.Pop();
+
+                    closingWindow.Close();
+
+                    _windowClosedObservable.Execute(closingWindow.GetType());
+                }
+            }
+
+            var currentWindow = GetOrCreateWindow(typeof(T));
+
+            currentWindow.SetOrder(_windowsStack.Count + EnvironmentOrder);
+
+            currentWindow.Open(model);
+
+            _windowsStack.Push(currentWindow);
+
+            OnWindowsQueueChanged();
+        }
+
+        /// <summary>
+        /// Opens a window with a model (legacy, for backward compatibility).
+        /// </summary>
         public void Open(object model, bool isDisplacing = true)
         {
             if (isDisplacing)
@@ -124,7 +155,7 @@ namespace Services
 
         private void OnDisposed()
         {
-            _loadingDisposable.Clear();
+            _windowDisposable.Clear();
 
             while (_windowsStack.Count > 0)
             {

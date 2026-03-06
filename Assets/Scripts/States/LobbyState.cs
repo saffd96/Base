@@ -1,18 +1,19 @@
 using System;
 using R3;
-using Services;
+using Services.WindowService;
 using Support;
 
 namespace States
 {
-    public class LobbyState : GameStateBase<Unit>
+    public class LobbyState : GameStateBase
     {
         private readonly GameMachine _gameMachine;
         private readonly WindowsService _windowsService;
         private readonly WindowResolver _windowResolver;
+
         private DisposableBag _rootDisposable = new();
 
-        private const string StateSceneName = "Lobby";
+        private const SceneType StateSceneType = SceneType.Lobby;
 
         public LobbyState(GameMachine gameMachine, WindowsService windowsService, WindowResolver windowResolver)
         {
@@ -23,7 +24,7 @@ namespace States
 
         protected override void Init()
         {
-            SceneExtensions.LoadScene(StateSceneName)
+            StateSceneType.LoadScene()
                 .SafeSubscribe(_ => OnSceneLoaded())
                 .AddTo(ref _rootDisposable);
         }

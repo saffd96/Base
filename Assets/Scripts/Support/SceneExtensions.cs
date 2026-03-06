@@ -8,41 +8,65 @@ namespace Support
 {
     public static class SceneExtensions
     {
-        public static Observable<Unit> LoadScene(string sceneName)
+        private static readonly string[] SceneNames =
         {
-            return Observable.Create<Unit>(subject =>
+            "Main",    // SceneType.Main
+            "Lobby",   // SceneType.Lobby
+            "Game"     // SceneType.Game
+        };
+
+        public static string GetSceneName(this SceneType sceneType)
+        {
+            var index = (int)sceneType;
+            if (index < 0 || index >= SceneNames.Length)
             {
-                var disposable = new CompositeDisposable();
+                throw new ArgumentOutOfRangeException(nameof(sceneType), $"Unknown scene type: {sceneType}");
+            }
+            return SceneNames[index];
+        }
 
-                void Handler(AsyncOperation operation)
-                {
-                    operation.completed -= Handler;
-
-                    subject.OnNext(Unit.Default);
-                    subject.OnCompleted();
-                }
+        public static Observable<Unit> LoadScene(this SceneType sceneType)
+        {
+            var sceneName = sceneType.GetSceneName();
+            
+            return Observable.Create<Unit>(observer =>
+            {
+                var isDisposed = false;
 
                 var operation = SceneManager.LoadSceneAsync(sceneName);
                 operation.completed += Handler;
 
-                Disposable
-                    .Create(() => operation.completed -= Handler)
-                    .AddTo(disposable);
+                return Disposable.Create(() =>
+                {
+                    isDisposed = true;
+                    operation.completed -= Handler;
+                });
 
-                return disposable;
+                void Handler(AsyncOperation asyncOperation)
+                {
+                    if (isDisposed) return;
+                    
+                    asyncOperation.completed -= Handler;
+
+                    observer.OnNext(Unit.Default);
+                    observer.OnCompleted();
+                }
             });
         }
 
         public static T LoadSceneRoot<T>() where T : MonoBehaviour
         {
-            return Object.FindObjectOfType<T>();
+            return Object.FindFirstObjectByType<T>();
         }
 
-        public static Observable<Unit> ObservableSceneLoaded(string sceneName)
+        public static Observable<Unit> ObserveSceneLoaded(this SceneType sceneType)
         {
+            var sceneName = sceneType.GetSceneName();
+            
             return Observable.Create<Unit>(observer =>
             {
-                if (SceneManager.GetSceneByName(sceneName).isLoaded)
+                var scene = SceneManager.GetSceneByName(sceneName);
+                if (scene.isLoaded)
                 {
                     observer.OnNext(Unit.Default);
                     observer.OnCompleted();
@@ -61,7 +85,7 @@ namespace Support
 
                 SceneManager.sceneLoaded += Handler;
 
-                return Disposable.Create(() => { SceneManager.sceneLoaded -= Handler; });
+                return Disposable.Create(() => SceneManager.sceneLoaded -= Handler);
             });
         }
     }

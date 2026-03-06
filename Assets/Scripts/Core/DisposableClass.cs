@@ -3,7 +3,7 @@ using R3;
 
 namespace Core
 {
-    public class DisposableClass
+    public class DisposableClass : IDisposable
     {
         protected DisposableBag Disposables;
 
@@ -18,6 +18,16 @@ namespace Core
 
         protected virtual void OnInit()
         {
+        }
+
+        protected virtual void OnDisposed()
+        {
+        }
+
+        public void Dispose()
+        {
+            OnDisposed();
+            Disposables.Clear();
         }
     }
 }
